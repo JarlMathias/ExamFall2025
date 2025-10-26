@@ -14,7 +14,7 @@ void Enemy::Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPositi
 }
 
 void Enemy::Update(Vector2d inTargetPosition)
-{
+{   
     if (isAlive)
     {
         Vector2d direction = position.VectorTowardsTarget(inTargetPosition).NormalizeVector();
@@ -27,14 +27,42 @@ void Enemy::Update(Vector2d inTargetPosition)
     }
 }
 
-void Enemy::Draw(bool worldIsBlue)
+void Enemy::Draw(WorldColor worldColor)
 {
-    if (isAlive && isBlue && worldIsBlue)
+    if (isAlive)
     {
-        DrawCircle(position.x, position.y, size, BLUE);
-    }
-    else if (isAlive && !isBlue && !worldIsBlue)
-    {
-        DrawCircle(position.x, position.y, size, RED);
+        switch (color)
+        {
+        case BLUE_COLOR:
+            if (worldColor == color)
+            {
+                DrawCircle(position.x, position.y, size, BLUE);
+            }
+            else
+            {
+                DrawCircle(position.x, position.y, size, { 0, 121, 241, 50 });
+            }
+            break;
+        case RED_COLOR:
+            if (worldColor == color)
+            {
+                DrawCircle(position.x, position.y, size, RED);
+            }
+            else
+            {
+                DrawCircle(position.x, position.y, size, { 230, 41, 55, 50 });
+            }
+            break;
+        case YELLOW_COLOR:
+            if (worldColor == color)
+            {
+                DrawCircle(position.x, position.y, size, YELLOW);
+            }
+            else
+            {
+                DrawCircle(position.x, position.y, size, { 253, 249, 0, 50 });
+            }
+            break;
+        }
     }
 }

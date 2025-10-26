@@ -6,18 +6,45 @@
 #include "Player/Player.h"
 #include "Bullet/Bullet.h"
 #include "Enemy/Enemy.h"
+#include "WorldColor.h"
 
 std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies)
 {
     Enemy e;
     e.Spawn(screenWidth, screenHeight, inTargetPosition);
-    if (GetRandomValue(0, 1) == 0)
-    {
-        e.isBlue = true;
-    }
-    enemies.push_back(e);
 
+    int randValue = GetRandomValue(0, 2);
+    e.color = static_cast<WorldColor>(randValue);
+
+    std::cout << e.color;
+
+    enemies.push_back(e);
     return enemies;
+}
+
+
+void DrawHud(WorldColor worldColor)
+{
+    Color blue = { 0, 121, 241, 50 };
+    Color red = { 230, 41, 55, 50 };
+    Color yellow = { 253, 249, 0, 50 };
+    
+    switch (worldColor)
+    {
+    case BLUE_COLOR:
+        blue.a = 255;
+        break;
+    case RED_COLOR:
+        red.a = 255;
+        break;
+    case YELLOW_COLOR:
+        yellow.a = 255;
+        break;
+    }
+
+    DrawCircle(50, 50, 15, blue);
+    DrawCircle(100, 50, 15, red);
+    DrawCircle(150, 50, 15, yellow);
 }
 
 int main()
@@ -28,7 +55,7 @@ int main()
     float halfScreenWidth = (float)(screenWidth / 2);
     float halfScreenHeight = (float)(screenHeight / 2);
 
-    bool worldIsBlue{ false };
+    WorldColor worldColor = BLUE_COLOR;
 
     Player player;
     player.position = { halfScreenWidth, halfScreenHeight };
@@ -67,14 +94,7 @@ int main()
 
         if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
         {
-            if (worldIsBlue)
-            {
-                worldIsBlue = false;
-            }
-            else
-            {
-                worldIsBlue = true;
-            }
+            worldColor = static_cast<WorldColor>((worldColor + 1) % WORLD_COLOR_COUNT);
         }
 
         // Update Bullets
@@ -112,7 +132,7 @@ int main()
         {
             for (auto& b : bullets)
             {
-                if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.isBlue == worldIsBlue)
+                if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == worldColor)
                 {
                     e.isAlive = false;
                     b.isAlive = false;
@@ -122,14 +142,7 @@ int main()
 
         // Draw
         BeginDrawing();
-        if (worldIsBlue)
-        {
-            ClearBackground({ 115, 42, 42, 255});
-        }
-        else
-        {
-            ClearBackground({ 16, 16, 79, 255});
-        }
+        ClearBackground({10, 10, 10, 255});
 
         player.Draw(aimDirection);
 
@@ -137,7 +150,9 @@ int main()
             b.Draw();
 
         for (auto& e : enemies)
-            e.Draw(worldIsBlue);
+            e.Draw(worldColor);
+
+        DrawHud(worldColor);
 
         EndDrawing();
     }
