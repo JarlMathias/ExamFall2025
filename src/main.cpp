@@ -6,7 +6,7 @@
 #include "Player/Player.h"
 #include "Bullet/Bullet.h"
 #include "Enemy/Enemy.h"
-#include "WorldColor.h"
+#include "ColorDimension.h"
 
 std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies)
 {
@@ -14,7 +14,7 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
     e.Spawn(screenWidth, screenHeight, inTargetPosition);
 
     int randValue = GetRandomValue(0, 2);
-    e.color = static_cast<WorldColor>(randValue);
+    e.color = static_cast<ColorDimension>(randValue);
 
     std::cout << e.color;
 
@@ -23,7 +23,7 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
 }
 
 
-void DrawHud(WorldColor worldColor)
+void DrawHud(ColorDimension worldColor)
 {
     Color blue = { 0, 121, 241, 50 };
     Color red = { 230, 41, 55, 50 };
@@ -42,9 +42,61 @@ void DrawHud(WorldColor worldColor)
         break;
     }
 
-    DrawCircle(50, 50, 15, blue);
-    DrawCircle(100, 50, 15, red);
-    DrawCircle(150, 50, 15, yellow);
+    Vector2d center = { 100, 100 };
+    float radius = 50.f;
+
+    Vector2d p1;
+    p1 = p1.CircularMotion(center, radius, 0.0f);
+    Vector2d p2;
+    p2 = p2.CircularMotion(center, radius, 2.0f * PI / 3.0f);
+    Vector2d p3;
+    p3 = p3.CircularMotion(center, radius, 4.0f * PI / 3.0f);
+
+    DrawCircle(p1.x, p1.y, 15, blue);
+    DrawCircle(p2.x, p2.y, 15, red);
+    DrawCircle(p3.x, p3.y, 15, yellow);
+
+    std::vector<Vector2d> points;
+    points.push_back(p1);
+    points.push_back(p2);
+    points.push_back(p3);
+
+    Vector2d previousVector = p3;
+    float lineOffset = 25.f;
+    
+    for (Vector2d p : points)
+    {
+        Vector2d dir = previousVector.VectorTowardsTarget(p);
+        float distance = dir.CalculateMagnitude();
+        if (distance == 0.0f) {
+            previousVector = p;
+            continue;
+        }
+        dir = dir.NormalizeVector();
+
+        Vector2d shaftStart = previousVector.SetVectorOffset(dir.ScaleVector(lineOffset));
+        Vector2d shaftEnd = p.SetVectorOffset(dir.ScaleVector(-lineOffset));
+
+        DrawLine(shaftStart.x, shaftStart.y, shaftEnd.x, shaftEnd.y, WHITE);
+
+        Vector2d tip = shaftEnd;
+
+        float arrowSize = 12.0f;
+        float arrowAngle = DEG2RAD * 25.0f;
+
+        Vector2d wingRight = dir.Rotate(-arrowAngle).ScaleVector(-arrowSize);
+        Vector2d wingLeft = dir.Rotate(arrowAngle).ScaleVector(-arrowSize);
+
+        Vector2d rightPoint = tip.SetVectorOffset(wingRight);
+        Vector2d leftPoint = tip.SetVectorOffset(wingLeft);
+
+        DrawLine(tip.x, tip.y, rightPoint.x, rightPoint.y, WHITE);
+        DrawLine(tip.x, tip.y, leftPoint.x, leftPoint.y, WHITE);
+
+        previousVector = p;
+    }
+
+
 }
 
 int main()
@@ -55,7 +107,7 @@ int main()
     float halfScreenWidth = (float)(screenWidth / 2);
     float halfScreenHeight = (float)(screenHeight / 2);
 
-    WorldColor worldColor = BLUE_COLOR;
+    ColorDimension worldColor = BLUE_COLOR;
 
     Player player;
     player.position = { halfScreenWidth, halfScreenHeight };
@@ -88,13 +140,14 @@ int main()
             Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
 
             Bullet b;
+            b.color = worldColor;
             b.Shoot(player.position, dir, 300.0f);
             bullets.push_back(b);
         }
 
         if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
         {
-            worldColor = static_cast<WorldColor>((worldColor + 1) % WORLD_COLOR_COUNT);
+            worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
         }
 
         // Update Bullets
@@ -132,7 +185,7 @@ int main()
         {
             for (auto& b : bullets)
             {
-                if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == worldColor)
+                if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == b.color)
                 {
                     e.isAlive = false;
                     b.isAlive = false;
@@ -147,7 +200,7 @@ int main()
         player.Draw(aimDirection);
 
         for (auto& b : bullets)
-            b.Draw();
+            b.Draw(worldColor);
 
         for (auto& e : enemies)
             e.Draw(worldColor);

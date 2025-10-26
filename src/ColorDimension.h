@@ -1,7 +1,7 @@
-#ifndef WORLDCOLOR_H
-#define WORLDCOLOR_H
+#ifndef COLORDIMENSION_H
+#define COLORDIMENSION_H
 
-enum WorldColor
+enum ColorDimension
 {
     BLUE_COLOR,
     RED_COLOR,

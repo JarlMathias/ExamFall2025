@@ -21,10 +21,36 @@ void Bullet::Update()
     }
 }
 
-void Bullet::Draw()
+void Bullet::Draw(ColorDimension colorDimension)
 {
     if (isAlive)
     {
-        DrawCircle(position.x, position.y, radius, YELLOW);
+        Color drawColor = WHITE;
+        
+        switch (color)
+        {
+        case BLUE_COLOR:
+            drawColor = BLUE;
+            break;
+        case RED_COLOR:
+            drawColor = RED;
+            break;
+        case YELLOW_COLOR:
+            drawColor = YELLOW;
+            break;
+        }
+
+        if (color == colorDimension)
+        {
+            DrawCircle(position.x, position.y, radius, {255, 255, 255, 255});
+            drawColor.a = 255;
+        }
+        else
+        {
+            DrawCircle(position.x, position.y, radius, {255, 255, 255, 100});
+            drawColor.a = 50;
+        }
+
+        DrawCircle(position.x, position.y, radius - 1.f, drawColor);
     }
 }

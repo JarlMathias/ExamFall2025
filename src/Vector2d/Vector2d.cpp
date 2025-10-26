@@ -72,3 +72,10 @@ Vector2d Vector2d::CircularMotion(Vector2d inCenter, float inRadius, float inAng
 
     return { cosX, sinY };
 }
+
+Vector2d Vector2d::Rotate(float angle)
+{
+    float cosA = cosf(angle);
+    float sinA = sinf(angle);
+    return { x * cosA - y * sinA, x * sinA + y * cosA };
+}

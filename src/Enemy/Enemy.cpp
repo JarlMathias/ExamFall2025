@@ -22,12 +22,12 @@ void Enemy::Update(Vector2d inTargetPosition)
 
         if (position.DistanceToTarget(inTargetPosition) < 45.f)
         {
-            std::cout << "game over";
+            std::cout << "game over" << std::endl;
         }
     }
 }
 
-void Enemy::Draw(WorldColor worldColor)
+void Enemy::Draw(ColorDimension worldColor)
 {
     if (isAlive)
     {

@@ -2,7 +2,7 @@
 #include "src/Vector2d/Vector2d.h"
 #include <iostream>
 #include <raylib.h>
-#include "src/WorldColor.h"
+#include "src/ColorDimension.h"
 
 class Enemy
 {
@@ -11,12 +11,12 @@ public:
     float speed = 150.f;
     float size = 20.f;
     bool isAlive{ true };
-    WorldColor color;
+    ColorDimension color;
 
     void Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPosition);
 
     void Update(Vector2d inTargetPosition);
 
-    void Draw(WorldColor worldColor);
+    void Draw(ColorDimension worldColor);
 };
 

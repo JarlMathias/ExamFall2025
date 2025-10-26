@@ -22,4 +22,6 @@ public:
     Vector2d CosineMovement(Vector2d inCenter, float inAmplitude, float inAngle);
 
     Vector2d CircularMotion(Vector2d inCenter, float inRadius, float inAngle);
+
+    Vector2d Rotate(float angle);
 };
