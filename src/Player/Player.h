@@ -10,6 +10,7 @@ public:
 	float size = 25.f;
 	Color color = GREEN;
 	Color aimColor = WHITE;
+	bool shieldActive = false;
 
 	void Move();
 

@@ -25,40 +25,69 @@ bool Ability::IsHoldingColor(ColorDimension color)
 	}
 }
 
-void Ability::Use()
+int Ability::Use(Player player, std::vector<Bullet> bullets, std::vector<Enemy> enemies)
 {	
+	int returnValue = 0;
+
+	// Smite --- DONE?
 	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
-		std::cout << "Holding ALL" << std::endl;
+		std::cout << "Using ALL" << std::endl;
+		returnValue = 1;
 	}
+
+	// Bullet speed --- DONE
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR))
 	{
-		std::cout << "Holding BLUE and RED" << std::endl;
+		std::cout << "Using BLUE and RED" << std::endl;
+		returnValue = 2;
 	}
+
+	// Enemy slow --- DONE
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
-		std::cout << "Holding BLUE and YELLOW" << std::endl;
+		std::cout << "Using BLUE and YELLOW" << std::endl;
+		returnValue = 3;
 	}
+
+	// Explosion
 	else if (IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
-		std::cout << "Holding RED and YELLOW" << std::endl;
+		std::cout << "Using RED and YELLOW" << std::endl;
+		returnValue = 4;
 	}
+
+	// Shield --- DONE
 	else if (IsHoldingColor(BLUE_COLOR))
 	{
-		std::cout << "Holding BLUE" << std::endl;
+		std::cout << "Using BLUE" << std::endl;
+		returnValue = 5;
 	}
+
+	// Bullet spread --- DONE
 	else if (IsHoldingColor(RED_COLOR))
 	{
-		std::cout << "Holding RED" << std::endl;
+		std::cout << "Using RED" << std::endl;
+		returnValue = 6;
 	}
+
+	// Speed --- DONE
 	else if (IsHoldingColor(YELLOW_COLOR))
 	{
-		std::cout << "Holding YELLOW" << std::endl;
+		std::cout << "Using YELLOW" << std::endl;
+
+		returnValue = 7;
 	}
+
 	else
 	{
 		std::cout << "ERROR: Not holding any valid colors" << std::endl;
 	}
 
+	cooldown = 3.0f;
+	lastUsedTime = GetTime();
+	isReady = false;
+
 	holdingColors.clear();
+	return returnValue;
 }

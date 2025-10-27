@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 void Player::Move()
 {
@@ -28,6 +29,10 @@ void Player::Move()
 void Player::Draw(Vector2d aimDirection)
 {
 	DrawCircle(position.x, position.y, size, color);
+	if (shieldActive)
+	{
+		DrawCircle(position.x, position.y, size * 1.25, { SKYBLUE.r, SKYBLUE.g, SKYBLUE.b, 150 });
+	}
 	DrawLine(
 		position.x,
 		position.y,

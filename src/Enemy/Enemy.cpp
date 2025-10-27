@@ -44,7 +44,7 @@ void Enemy::Draw(ColorDimension worldColor)
             }
             else
             {
-                DrawCircle(position.x, position.y, size, { 0, 121, 241, 50 });
+                DrawCircle(position.x, position.y, size, { BLUE.r, BLUE.g, BLUE.b, 50 });
             }
             break;
         case RED_COLOR:
@@ -54,7 +54,7 @@ void Enemy::Draw(ColorDimension worldColor)
             }
             else
             {
-                DrawCircle(position.x, position.y, size, { 230, 41, 55, 50 });
+                DrawCircle(position.x, position.y, size, { RED.r, RED.g, RED.b, 50 });
             }
             break;
         case YELLOW_COLOR:
@@ -64,7 +64,7 @@ void Enemy::Draw(ColorDimension worldColor)
             }
             else
             {
-                DrawCircle(position.x, position.y, size, { 253, 249, 0, 50 });
+                DrawCircle(position.x, position.y, size, { YELLOW.r, YELLOW.g, YELLOW.b, 50 });
             }
             break;
         }

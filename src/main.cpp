@@ -30,9 +30,9 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
 
 void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors)
 {
-    Color blue = { 0, 121, 241, 50 };
-    Color red = { 230, 41, 55, 50 };
-    Color yellow = { 253, 249, 0, 50 };
+    Color blue = { BLUE.r, BLUE.g, BLUE.b, 50 };
+    Color red = { RED.r, RED.g, RED.b, 50 };
+    Color yellow = { YELLOW.r, YELLOW.g, YELLOW.b, 50 };
     
     switch (worldColor)
     {
@@ -134,6 +134,32 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
     }
 }
 
+void DrawCooldown(Ability ability)
+{
+    if (!ability.isReady)
+    {
+        float currentTime = GetTime();
+        float elapsed = currentTime - ability.lastUsedTime;
+        float progress = elapsed / ability.cooldown;
+        if (progress > 1.0f) progress = 1.0f;
+
+        float radius = 40.0f;
+        Vector2 center = { 1200, 700 };
+
+        DrawCircleV(center, radius, LIGHTGRAY);
+
+        float angle = 360.0f * progress;
+        DrawCircleSector(center, radius, -90, -90 + (360 - angle), 64, Fade(BLACK, 0.7f));
+
+        DrawCircleLines(center.x, center.y, radius, DARKGRAY);
+        DrawText(TextFormat("%.1f", ability.cooldown - elapsed), center.x - 15, center.y - 10, 20, WHITE);
+    }
+    else
+    {
+        DrawCircle(1200, 700, 40, GREEN);
+    }
+}
+
 int main()
 {
     int screenWidth = 1280;
@@ -151,9 +177,18 @@ int main()
     Vector2d aimDirection;
 
     std::vector<Bullet> bullets;
+    float bulletSpeed = 500.0f;
+    bool spreadEnabled{ false };
+    int spreadCount = 5;
+    float spreadAngle = 15 * DEG2RAD;
+
     std::vector<Enemy> enemies;
 
     Ability ability;
+    int abilityEffect;
+    bool drawExplosion = false;
+    int explosionDuration = 0;
+    float explosionRadius = 300.0f;
 
     // Setup
     InitWindow(screenWidth, screenHeight, "ExamFall2025");
@@ -180,11 +215,29 @@ int main()
                 Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
                 Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
 
-                Bullet b;
-                b.color = worldColor;
-                b.Shoot(player.position, dir, 500.0f);
-                bullets.push_back(b);
+                if (spreadEnabled)
+                {
+                    for (int i = 0; i < spreadCount; i++)
+                    {
+                        float angleOffset = ((float)i / (spreadCount - 1) - 0.5f) * spreadAngle;
+
+                        Vector2d spreadDir = dir.Rotate(angleOffset);
+
+                        Bullet b;
+                        b.color = worldColor;
+                        b.Shoot(player.position, spreadDir, bulletSpeed);
+                        bullets.push_back(b);
+                    }
+                }
+                else
+                {
+                    Bullet b;
+                    b.color = worldColor;
+                    b.Shoot(player.position, dir, bulletSpeed);
+                    bullets.push_back(b);
+                }
             }
+
 
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
             {
@@ -194,10 +247,84 @@ int main()
             // Use Ability
             if (IsKeyPressed(KEY_E))
             {
-                if (ability.holdingColors.size() == 3)
+                if (ability.holdingColors.size() == 3 && ability.isReady)
                 {
-                    ability.Use();
+                    abilityEffect = ability.Use(player, bullets, enemies);
+
+                    switch(abilityEffect)
+                    {
+                    case 0:
+                        break;
+                    case 1:
+                        enemies.clear();
+                        break;
+                    case 2:
+                        bulletSpeed *= 2;
+                        std::cout << bulletSpeed << std::endl;
+                        break;
+                    case 3:
+                        for (auto& e : enemies)
+                            e.speed /= 2;
+                        break;
+                    case 4:
+                        drawExplosion = true;
+                        enemies.erase(
+                            std::remove_if(enemies.begin(), enemies.end(),
+                                [&](const Enemy& e) {
+                                    return player.position.DistanceToTarget(e.position) < explosionRadius;
+                                }),
+                            enemies.end());
+
+                        break;
+                    case 5:
+                        player.shieldActive = true;
+                        break;
+                    case 6:
+                        spreadEnabled = true;
+                        break;
+                    case 7:
+                        player.speed *= 2;
+                        break;
+                    default:
+                        break;
+                    }
                 }
+            }
+
+            // Update Ability
+            if (!ability.isReady && GetTime() - ability.lastUsedTime >= ability.cooldown)
+            {
+                std::cout << abilityEffect << std::endl;
+                
+                switch (abilityEffect)
+                {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    bulletSpeed /= 2;
+                    std::cout << bulletSpeed << std::endl;
+                    break;
+                case 3:
+                    for (auto& e : enemies)
+                        e.speed *= 2;
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    spreadEnabled = false;
+                    break;
+                case 7:
+                    player.speed /= 2;
+                    break;
+                default:
+                    break;
+                }
+
+                ability.isReady = true;
             }
 
             // Update Bullets
@@ -210,11 +337,22 @@ int main()
                 bullets.end());
 
             // Update Enemies
-            for (auto& e : enemies)
-                if (e.Update(player.position))
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                if (enemies[i].Update(player.position))
                 {
-                    gamestate = DEATHSCREEN;
-                };
+                    if (!player.shieldActive)
+                    {
+                        gamestate = DEATHSCREEN;
+                    }
+                    else
+                    {
+                        enemies.erase(enemies.begin() + i);
+                        i--;
+                        player.shieldActive = false;
+                    }
+                }
+            }
 
             enemies.erase(
                 std::remove_if(enemies.begin(), enemies.end(),
@@ -261,7 +399,20 @@ int main()
             for (auto& e : enemies)
                 e.Draw(worldColor);
 
+            if (drawExplosion && explosionDuration < 15)
+            {
+                DrawCircle(player.position.x, player.position.y, explosionRadius, { ORANGE.r, ORANGE.g, ORANGE.b, 100 });
+                explosionDuration += 1;
+            }
+            else
+            {
+                drawExplosion = false;
+                explosionDuration = 0;
+            }
+
             DrawHud(worldColor, ability.holdingColors);
+
+            DrawCooldown(ability);
 
             EndDrawing();
 
