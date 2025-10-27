@@ -1,5 +1,6 @@
 #include "Bullet.h"
 
+// Function to initiate bullets
 void Bullet::Shoot(Vector2d inStartPos, Vector2d inDirection, float speed)
 {
     position = inStartPos;
@@ -7,6 +8,7 @@ void Bullet::Shoot(Vector2d inStartPos, Vector2d inDirection, float speed)
     isAlive = true;
 }
 
+// Function to update bullets
 void Bullet::Update()
 {
     if (isAlive)
@@ -21,6 +23,7 @@ void Bullet::Update()
     }
 }
 
+// Function to draw bullets
 void Bullet::Draw(ColorDimension colorDimension)
 {
     if (isAlive)

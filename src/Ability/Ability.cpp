@@ -1,5 +1,6 @@
 #include "Ability.h"
 
+// Adds color to be held
 void Ability::InsertColor(ColorDimension color)
 {
 	if (holdingColors.size() < 3)
@@ -13,6 +14,7 @@ void Ability::InsertColor(ColorDimension color)
 	}
 }
 
+// Checks if the player is holding a specific color
 bool Ability::IsHoldingColor(ColorDimension color)
 {
 	if (std::find(holdingColors.begin(), holdingColors.end(), color) != holdingColors.end())
@@ -25,6 +27,7 @@ bool Ability::IsHoldingColor(ColorDimension color)
 	}
 }
 
+// Runs different ability outcomes based on held colors
 int Ability::Use(Player player, std::vector<Bullet> bullets, std::vector<Enemy> enemies)
 {	
 	int returnValue = 0;
@@ -50,7 +53,7 @@ int Ability::Use(Player player, std::vector<Bullet> bullets, std::vector<Enemy> 
 		returnValue = 3;
 	}
 
-	// Explosion
+	// Explosion --- DONE
 	else if (IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using RED and YELLOW" << std::endl;

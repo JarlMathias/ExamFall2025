@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 
+// Function to move the player
 void Player::Move()
 {
 	Vector2d offsetPosition{ 0.f, 0.f };
@@ -26,6 +27,7 @@ void Player::Move()
 	position = position.SetVectorOffset(offsetPosition.ScaleVector(speed * GetFrameTime()));
 }
 
+// Function to draw the player
 void Player::Draw(Vector2d aimDirection)
 {
 	DrawCircle(position.x, position.y, size, color);
@@ -42,6 +44,7 @@ void Player::Draw(Vector2d aimDirection)
 	);
 }
 
+// Function to get the aim direction
 Vector2d Player::AimDirection()
 {
 	Vector2d mousePosition{ GetMouseX(), GetMouseY() };

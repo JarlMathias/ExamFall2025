@@ -9,12 +9,14 @@
 #include "ColorDimension.h"
 #include "Ability/Ability.h"
 
+// Set global variables for Score and Gamestate
 int score = 0;
 enum Gamestate {
     PLAYING,
     DEATHSCREEN
 };
 
+// Function to spawn enemies at random location and add them to the vector
 std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies)
 {
     Enemy e;
@@ -27,7 +29,7 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
     return enemies;
 }
 
-
+// Function to draw several HUD elements
 void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors)
 {
     Color blue = { BLUE.r, BLUE.g, BLUE.b, 50 };
@@ -50,6 +52,7 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
     Vector2d center = { 100, 100 };
     float radius = 50.f;
 
+    // Creates three points in a circle to act as placement for the three color circles
     Vector2d p1;
     p1 = p1.CircularMotion(center, radius, 0.0f);
     Vector2d p2;
@@ -69,6 +72,7 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
     Vector2d previousVector = p3;
     float lineOffset = 25.f;
     
+    // Draws arrows pointing between the HUD elements
     for (Vector2d p : points)
     {
         Vector2d dir = previousVector.VectorTowardsTarget(p);
@@ -101,8 +105,10 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
         previousVector = p;
     }
 
+    // Displays the score
     DrawText(TextFormat("Score: %i", score), 1100, 50, 30, WHITE);
 
+    // Displays the currently held "colors" for the ability
     for (int i = 0; i < 3; i++)
     {
         DrawCircle(1200, 950 - (i * 75), 25.f, WHITE);
@@ -134,6 +140,7 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
     }
 }
 
+// Draws the Cooldown circle
 void DrawCooldown(Ability ability)
 {
     if (!ability.isReady)
@@ -160,8 +167,10 @@ void DrawCooldown(Ability ability)
     }
 }
 
+// Main
 int main()
 {
+    // Setup variables
     int screenWidth = 1280;
     int screenHeight = 1024;
 
@@ -194,6 +203,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "ExamFall2025");
     SetTargetFPS(60);
 
+    // Spawning initial enemies
     for (int i = 0; i < 3; i++)
     {
         enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
@@ -205,16 +215,17 @@ int main()
         switch (gamestate)
         {
         case PLAYING:
-            // Input & Player
+            // Input and Player control
             aimDirection = player.AimDirection();
             player.Move();
 
-            // Shooting
+            // Function for shooting
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
                 Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
                 Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
 
+                // Shoots in a spread pattern if respective ability is active
                 if (spreadEnabled)
                 {
                     for (int i = 0; i < spreadCount; i++)
@@ -238,7 +249,7 @@ int main()
                 }
             }
 
-
+            // Changes the current Color Dimension / shootable enemies
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
             {
                 worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
@@ -291,7 +302,7 @@ int main()
                 }
             }
 
-            // Update Ability
+            // Update/Reset Ability
             if (!ability.isReady && GetTime() - ability.lastUsedTime >= ability.cooldown)
             {
                 std::cout << abilityEffect << std::endl;
@@ -418,6 +429,7 @@ int main()
 
             break;
 
+        // Deathscreen when getting hit
         case DEATHSCREEN:
             BeginDrawing();
             ClearBackground({ 10, 10, 10, 255 });

@@ -1,5 +1,6 @@
 #include "Enemy.h"
 
+// Function to initiate new enemies
 void Enemy::Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPosition)
 {
     Vector2d randPos = { (float)(rand() % inScreenWidth), (float)(rand() % inScreenHeight) };
@@ -13,6 +14,7 @@ void Enemy::Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPositi
     isAlive = true;
 }
 
+// Function to update enemies
 bool Enemy::Update(Vector2d inTargetPosition)
 {   
     if (isAlive)
@@ -31,6 +33,7 @@ bool Enemy::Update(Vector2d inTargetPosition)
     }
 }
 
+// Function to draw enemies
 void Enemy::Draw(ColorDimension worldColor)
 {
     if (isAlive)

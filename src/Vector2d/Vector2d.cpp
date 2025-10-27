@@ -1,6 +1,7 @@
 #include "Vector2d.h"
 #include <vector>
 
+// Returns magnitude of vector
 float Vector2d::CalculateMagnitude()
 {
     float magnitudeSquared = x * x + y * y;
@@ -8,6 +9,7 @@ float Vector2d::CalculateMagnitude()
     return magnitude;
 }
 
+// Returns an offset of two vectors added
 Vector2d Vector2d::SetVectorOffset(Vector2d inVectorToAdd)
 {
     float outVectorX = x + inVectorToAdd.x;
@@ -17,6 +19,7 @@ Vector2d Vector2d::SetVectorOffset(Vector2d inVectorToAdd)
     return outVector;
 }
 
+// Returns a scaled vector
 Vector2d Vector2d::ScaleVector(float inScalar)
 {
     float scaledXVector = x * inScalar;
@@ -26,6 +29,7 @@ Vector2d Vector2d::ScaleVector(float inScalar)
     return scaledVector;
 }
 
+// Returns a vector between two vectors
 Vector2d Vector2d::VectorTowardsTarget(Vector2d inTargetVector)
 {
     float targetedXVector = inTargetVector.x - x;
@@ -35,6 +39,7 @@ Vector2d Vector2d::VectorTowardsTarget(Vector2d inTargetVector)
     return targetedVector;
 }
 
+// Returns the distance between two vectors
 float Vector2d::DistanceToTarget(Vector2d inTargetedVector)
 {
     Vector2d targetedVector = VectorTowardsTarget(inTargetedVector);
@@ -43,6 +48,7 @@ float Vector2d::DistanceToTarget(Vector2d inTargetedVector)
     return distanceToTargetedVector;
 }
 
+// Returns the normalized version of a vector
 Vector2d Vector2d::NormalizeVector()
 {
     if (CalculateMagnitude() == 0)
@@ -57,6 +63,7 @@ Vector2d Vector2d::NormalizeVector()
     return normalizedVector;
 }
 
+// Returns cosine movement of a vector using amplitude and angle
 Vector2d Vector2d::CosineMovement(Vector2d inCenter, float inAmplitude, float inAngle)
 {
     float x = inCenter.x + inAmplitude * cosf(inAngle);
@@ -65,6 +72,7 @@ Vector2d Vector2d::CosineMovement(Vector2d inCenter, float inAmplitude, float in
     return { x, y };
 }
 
+// Returns the circular motion of a vector using radius and angle
 Vector2d Vector2d::CircularMotion(Vector2d inCenter, float inRadius, float inAngle)
 {
     float cosX = inCenter.x + inRadius * cosf(inAngle);
@@ -73,6 +81,7 @@ Vector2d Vector2d::CircularMotion(Vector2d inCenter, float inRadius, float inAng
     return { cosX, sinY };
 }
 
+// Rotates vector around an angle
 Vector2d Vector2d::Rotate(float angle)
 {
     float cosA = cosf(angle);
