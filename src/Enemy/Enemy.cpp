@@ -13,7 +13,7 @@ void Enemy::Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPositi
     isAlive = true;
 }
 
-void Enemy::Update(Vector2d inTargetPosition)
+bool Enemy::Update(Vector2d inTargetPosition)
 {   
     if (isAlive)
     {
@@ -22,7 +22,11 @@ void Enemy::Update(Vector2d inTargetPosition)
 
         if (position.DistanceToTarget(inTargetPosition) < 45.f)
         {
-            std::cout << "game over" << std::endl;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

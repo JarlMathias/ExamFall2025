@@ -8,6 +8,12 @@
 #include "Enemy/Enemy.h"
 #include "ColorDimension.h"
 
+int score = 0;
+enum Gamestate {
+    PLAYING,
+    DEATHSCREEN
+};
+
 std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies)
 {
     Enemy e;
@@ -96,7 +102,7 @@ void DrawHud(ColorDimension worldColor)
         previousVector = p;
     }
 
-
+    DrawText(TextFormat("Score: %i", score), 1100, 50, 30, WHITE);
 }
 
 int main()
@@ -108,6 +114,7 @@ int main()
     float halfScreenHeight = (float)(screenHeight / 2);
 
     ColorDimension worldColor = BLUE_COLOR;
+    enum Gamestate gamestate = PLAYING;
 
     Player player;
     player.position = { halfScreenWidth, halfScreenHeight };
@@ -129,85 +136,105 @@ int main()
     // Main Game Loop
     while (!WindowShouldClose())
     {
-        // Input & Player
-        aimDirection = player.AimDirection();
-        player.Move();
-
-        // Shooting
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        switch (gamestate)
         {
-            Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
-            Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
+        case PLAYING:
+            // Input & Player
+            aimDirection = player.AimDirection();
+            player.Move();
 
-            Bullet b;
-            b.color = worldColor;
-            b.Shoot(player.position, dir, 300.0f);
-            bullets.push_back(b);
-        }
-
-        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
-        {
-            worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
-        }
-
-        // Update Bullets
-        for (auto& b : bullets)
-            b.Update();
-
-        bullets.erase(
-            std::remove_if(bullets.begin(), bullets.end(),
-                [](const Bullet& b) { return !b.isAlive; }),
-            bullets.end());
-
-        // Update Enemies
-        for (auto& e : enemies)
-            e.Update(player.position);
-
-        enemies.erase(
-            std::remove_if(enemies.begin(), enemies.end(),
-                [](const Enemy& e) { return !e.isAlive; }),
-            enemies.end());
-
-        // Randomly spawn new enemies over time
-        if (GetRandomValue(0, 100) == 0 && enemies.size() < 15)
-        {
-            enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
-        }
-
-        // Make sures theres always one enemy on screen
-        if (enemies.size() == 0)
-        {
-            enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
-        }
-
-        // Bullet–enemy collision
-        for (auto& e : enemies)
-        {
-            for (auto& b : bullets)
+            // Shooting
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
-                if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == b.color)
+                Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
+                Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
+
+                Bullet b;
+                b.color = worldColor;
+                b.Shoot(player.position, dir, 500.0f);
+                bullets.push_back(b);
+            }
+
+            if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+            {
+                worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
+            }
+
+            // Update Bullets
+            for (auto& b : bullets)
+                b.Update();
+
+            bullets.erase(
+                std::remove_if(bullets.begin(), bullets.end(),
+                    [](const Bullet& b) { return !b.isAlive; }),
+                bullets.end());
+
+            // Update Enemies
+            for (auto& e : enemies)
+                if (e.Update(player.position))
                 {
-                    e.isAlive = false;
-                    b.isAlive = false;
+                    gamestate = DEATHSCREEN;
+                };
+
+            enemies.erase(
+                std::remove_if(enemies.begin(), enemies.end(),
+                    [](const Enemy& e) { return !e.isAlive; }),
+                enemies.end());
+
+            // Randomly spawn new enemies over time
+            if (GetRandomValue(0, 100) == 0 && enemies.size() < 15)
+            {
+                enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
+            }
+
+            // Make sures theres always one enemy on screen
+            if (enemies.size() == 0)
+            {
+                enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
+            }
+
+            // Bullet–enemy collision
+            for (auto& e : enemies)
+            {
+                for (auto& b : bullets)
+                {
+                    if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == b.color)
+                    {
+                        e.isAlive = false;
+                        b.isAlive = false;
+                        score += 1;
+                    }
                 }
             }
+
+            // Draw
+            BeginDrawing();
+            ClearBackground({ 10, 10, 10, 255 });
+
+            player.Draw(aimDirection);
+
+            for (auto& b : bullets)
+                b.Draw(worldColor);
+
+            for (auto& e : enemies)
+                e.Draw(worldColor);
+
+            DrawHud(worldColor);
+
+            EndDrawing();
+
+            break;
+
+        case DEATHSCREEN:
+            BeginDrawing();
+            ClearBackground({ 10, 10, 10, 255 });
+
+            DrawText("You Lost!", 400, 400, 100, WHITE);
+            DrawText(TextFormat("Score: %i", score), 400, 600, 100, WHITE);
+
+            EndDrawing();
+            break;
         }
-
-        // Draw
-        BeginDrawing();
-        ClearBackground({10, 10, 10, 255});
-
-        player.Draw(aimDirection);
-
-        for (auto& b : bullets)
-            b.Draw(worldColor);
-
-        for (auto& e : enemies)
-            e.Draw(worldColor);
-
-        DrawHud(worldColor);
-
-        EndDrawing();
     }
 
     CloseWindow();

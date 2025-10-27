@@ -15,7 +15,7 @@ public:
 
     void Spawn(int inScreenWidth, int inScreenHeight, Vector2d inTargetPosition);
 
-    void Update(Vector2d inTargetPosition);
+    bool Update(Vector2d inTargetPosition);
 
     void Draw(ColorDimension worldColor);
 };
