@@ -36,6 +36,9 @@
     <ClCompile Include="src\Enemy\Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Ability\Ability.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Player\Player.h">
@@ -56,8 +59,8 @@
     <ClInclude Include="src\Enemy\Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldColor.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Ability.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,6 +7,7 @@
 #include "Bullet/Bullet.h"
 #include "Enemy/Enemy.h"
 #include "ColorDimension.h"
+#include "Ability/Ability.h"
 
 int score = 0;
 enum Gamestate {
@@ -22,14 +23,12 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
     int randValue = GetRandomValue(0, 2);
     e.color = static_cast<ColorDimension>(randValue);
 
-    std::cout << e.color;
-
     enemies.push_back(e);
     return enemies;
 }
 
 
-void DrawHud(ColorDimension worldColor)
+void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors)
 {
     Color blue = { 0, 121, 241, 50 };
     Color red = { 230, 41, 55, 50 };
@@ -58,9 +57,9 @@ void DrawHud(ColorDimension worldColor)
     Vector2d p3;
     p3 = p3.CircularMotion(center, radius, 4.0f * PI / 3.0f);
 
-    DrawCircle(p1.x, p1.y, 15, blue);
-    DrawCircle(p2.x, p2.y, 15, red);
-    DrawCircle(p3.x, p3.y, 15, yellow);
+    DrawCircle(p1.x, p1.y, 15.f, blue);
+    DrawCircle(p2.x, p2.y, 15.f, red);
+    DrawCircle(p3.x, p3.y, 15.f, yellow);
 
     std::vector<Vector2d> points;
     points.push_back(p1);
@@ -103,6 +102,36 @@ void DrawHud(ColorDimension worldColor)
     }
 
     DrawText(TextFormat("Score: %i", score), 1100, 50, 30, WHITE);
+
+    for (int i = 0; i < 3; i++)
+    {
+        DrawCircle(1200, 950 - (i * 75), 25.f, WHITE);
+
+        DrawCircle(1200, 950 - (i * 75), 20.f, GRAY);
+    }
+
+    for (int i = 0; i < holdingColors.size(); i++)
+    {
+        Color color;
+
+        switch (holdingColors[i])
+        {
+        case BLUE_COLOR:
+            color = BLUE;
+            break;
+        case RED_COLOR:
+            color = RED;
+            break;
+        case YELLOW_COLOR:
+            color = YELLOW;
+            break;
+        default:
+            color = GRAY;
+            break;
+        }
+
+        DrawCircle(1200, 950 - (i * 75), 20.f, color);
+    }
 }
 
 int main()
@@ -123,6 +152,8 @@ int main()
 
     std::vector<Bullet> bullets;
     std::vector<Enemy> enemies;
+
+    Ability ability;
 
     // Setup
     InitWindow(screenWidth, screenHeight, "ExamFall2025");
@@ -158,6 +189,15 @@ int main()
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
             {
                 worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
+            }
+
+            // Use Ability
+            if (IsKeyPressed(KEY_E))
+            {
+                if (ability.holdingColors.size() == 3)
+                {
+                    ability.Use();
+                }
             }
 
             // Update Bullets
@@ -200,6 +240,8 @@ int main()
                 {
                     if (e.isAlive && b.isAlive && e.position.DistanceToTarget(b.position) < e.size + b.radius && e.color == b.color)
                     {
+                        ability.InsertColor(e.color);
+                        
                         e.isAlive = false;
                         b.isAlive = false;
                         score += 1;
@@ -219,7 +261,7 @@ int main()
             for (auto& e : enemies)
                 e.Draw(worldColor);
 
-            DrawHud(worldColor);
+            DrawHud(worldColor, ability.holdingColors);
 
             EndDrawing();
 
