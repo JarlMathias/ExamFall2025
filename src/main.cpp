@@ -178,6 +178,8 @@ int main()
     float halfScreenHeight = (float)(screenHeight / 2);
 
     ColorDimension worldColor = BLUE_COLOR;
+    int colorSwapCD = 0;
+    int maxSwapCD = 45;
     enum Gamestate gamestate = PLAYING;
 
     Player player;
@@ -250,9 +252,10 @@ int main()
             }
 
             // Changes the current Color Dimension / shootable enemies
-            if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+            if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && colorSwapCD == 0)
             {
                 worldColor = static_cast<ColorDimension>((worldColor + 1) % WORLD_COLOR_COUNT);
+                colorSwapCD = maxSwapCD;
             }
 
             // Use Ability
@@ -419,6 +422,12 @@ int main()
             {
                 drawExplosion = false;
                 explosionDuration = 0;
+            }
+
+            if (colorSwapCD != 0)
+            {
+                colorSwapCD -= 1;
+                DrawRectangle(player.position.x - player.size, player.position.y - (player.size + 20), ((float)colorSwapCD / (float)maxSwapCD) * (float)player.size * 2.0f, 10, LIME);
             }
 
             DrawHud(worldColor, ability.holdingColors);
