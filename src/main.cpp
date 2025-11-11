@@ -260,7 +260,7 @@ int main()
             {
                 if (ability.holdingColors.size() == 3 && ability.isReady)
                 {
-                    abilityEffect = ability.Use(player, bullets, enemies);
+                    abilityEffect = ability.Use();
 
                     switch(abilityEffect)
                     {
@@ -319,7 +319,7 @@ int main()
                     break;
                 case 3:
                     for (auto& e : enemies)
-                        e.speed *= 2;
+                        e.speed == 150.0f;
                     break;
                 case 4:
                     break;

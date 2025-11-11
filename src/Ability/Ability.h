@@ -19,5 +19,5 @@ public:
 
 	bool IsHoldingColor(ColorDimension color);
 
-	int Use(Player player, std::vector<Bullet> bullets, std::vector<Enemy> enemies);
+	int Use();
 };

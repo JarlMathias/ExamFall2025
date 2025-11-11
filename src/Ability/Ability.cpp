@@ -28,7 +28,7 @@ bool Ability::IsHoldingColor(ColorDimension color)
 }
 
 // Runs different ability outcomes based on held colors
-int Ability::Use(Player player, std::vector<Bullet> bullets, std::vector<Enemy> enemies)
+int Ability::Use()
 {	
 	int returnValue = 0;
 
