@@ -179,7 +179,7 @@ int main()
 
     ColorDimension worldColor = BLUE_COLOR;
     int colorSwapCD = 0;
-    int maxSwapCD = 45;
+    int maxSwapCD = 30;
     enum Gamestate gamestate = PLAYING;
 
     Player player;
@@ -411,7 +411,7 @@ int main()
                 b.Draw(worldColor);
 
             for (auto& e : enemies)
-                e.Draw(worldColor);
+                e.Draw(worldColor, player.position);
 
             if (drawExplosion && explosionDuration < 15)
             {

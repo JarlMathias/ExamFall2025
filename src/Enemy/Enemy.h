@@ -17,6 +17,6 @@ public:
 
     bool Update(Vector2d inTargetPosition);
 
-    void Draw(ColorDimension worldColor);
+    void Draw(ColorDimension worldColor, Vector2d playerPos);
 };
 
