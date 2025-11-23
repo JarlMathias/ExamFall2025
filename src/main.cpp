@@ -8,22 +8,57 @@
 #include "Enemy/Enemy.h"
 #include "ColorDimension.h"
 #include "Ability/Ability.h"
+#include "Level/Level.h"
 
 // Set global variables for Score and Gamestate
 int score = 0;
+
 enum Gamestate {
     PLAYING,
     DEATHSCREEN
 };
 
+std::vector<Level> levels;
+
+void InitLevels()
+{
+    int n = 2; // number of levels
+
+    for (int i = 0; i < n; ++i) {
+        levels.emplace_back();
+    }
+    
+    // Add enemies for level 0
+    std::vector<int> level0Waves{ 3, 5, 3 ,1 };
+    std::vector<ColorDimension> level0Enemies
+    {
+        BLUE_COLOR, RED_COLOR, RED_COLOR,
+        YELLOW_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, YELLOW_COLOR,
+        BLUE_COLOR, BLUE_COLOR, BLUE_COLOR,
+        RED_COLOR
+    };
+    levels[0].AddEnemies(level0Enemies);
+    levels[0].AddWaves(level0Waves);
+
+    // Add enemies for level 1
+    std::vector<int> level1Waves{ 3, 2, 6 };
+    std::vector<ColorDimension> level1Enemies
+    {
+        BLUE_COLOR, RED_COLOR, YELLOW_COLOR,
+        YELLOW_COLOR, YELLOW_COLOR,
+        BLUE_COLOR, BLUE_COLOR, RED_COLOR, RED_COLOR, YELLOW_COLOR, YELLOW_COLOR
+    };
+    levels[1].AddEnemies(level1Enemies);
+    levels[1].AddWaves(level1Waves);
+}
+
 // Function to spawn enemies at random location and add them to the vector
-std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies)
+std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTargetPosition, std::vector<Enemy> enemies, ColorDimension color)
 {
     Enemy e;
     e.Spawn(screenWidth, screenHeight, inTargetPosition);
 
-    int randValue = GetRandomValue(0, 2);
-    e.color = static_cast<ColorDimension>(randValue);
+    e.color = static_cast<ColorDimension>(color);
 
     enemies.push_back(e);
     return enemies;
@@ -177,6 +212,10 @@ int main()
     float halfScreenWidth = (float)(screenWidth / 2);
     float halfScreenHeight = (float)(screenHeight / 2);
 
+    InitLevels();
+    int currentLevel = 0;
+    int currentWave = 0;
+
     ColorDimension worldColor = BLUE_COLOR;
     int colorSwapCD = 0;
     int maxSwapCD = 30;
@@ -205,10 +244,21 @@ int main()
     InitWindow(screenWidth, screenHeight, "ExamFall2025");
     SetTargetFPS(60);
 
-    // Spawning initial enemies
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < levels[currentLevel].enemyWaves[currentWave]; i++)
     {
-        enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
+        if (currentWave == 0)
+        {
+            enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies, levels[currentLevel].enemyList[i]);
+        }
+        else
+        {
+            int spawnedEnemies = 0;
+            for (int j = 0; j < currentWave; j++)
+            {
+                spawnedEnemies += levels[currentLevel].enemyWaves[j];
+            }
+            enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies, levels[currentLevel].enemyList[spawnedEnemies + i]);
+        }
     }
 
     // Main Game Loop
@@ -373,16 +423,38 @@ int main()
                     [](const Enemy& e) { return !e.isAlive; }),
                 enemies.end());
 
-            // Randomly spawn new enemies over time
-            if (GetRandomValue(0, 100) == 0 && enemies.size() < 15)
-            {
-                enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
-            }
-
-            // Make sures theres always one enemy on screen
             if (enemies.size() == 0)
             {
-                enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies);
+                if (currentWave + 1 == levels[currentLevel].enemyWaves.size())
+                {
+                    currentLevel += 1;
+                    currentWave = 0;
+                    std::cout << "level increased" << std::endl;
+                }
+                else
+                {
+                    std::cout << currentWave << std::endl;
+
+                    currentWave += 1;
+                    std::cout << "wave increased" << std::endl;
+                }
+
+                for (int i = 0; i < levels[currentLevel].enemyWaves[currentWave]; i++)
+                {
+                    if (currentWave == 0)
+                    {
+                        enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies, levels[currentLevel].enemyList[i]);
+                    }
+                    else
+                    {
+                        int spawnedEnemies = 0;
+                        for (int j = 0; j < currentWave; j++)
+                        {
+                            spawnedEnemies += levels[currentLevel].enemyWaves[j];
+                        }
+                        enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies, levels[currentLevel].enemyList[spawnedEnemies + i]);
+                    }
+                }
             }
 
             // Bullet–enemy collision
