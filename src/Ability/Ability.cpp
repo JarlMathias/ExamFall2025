@@ -78,7 +78,6 @@ int Ability::Use()
 	else if (IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using YELLOW" << std::endl;
-
 		returnValue = 7;
 	}
 
@@ -92,5 +91,54 @@ int Ability::Use()
 	isReady = false;
 
 	holdingColors.clear();
+	return returnValue;
+}
+
+int Ability::CanUse()
+{
+	int returnValue = 0;
+
+	// Smite --- DONE?
+	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
+	{
+		returnValue = 1;
+	}
+
+	// Bullet speed --- DONE
+	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR))
+	{
+		returnValue = 2;
+	}
+
+	// Enemy slow --- DONE
+	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(YELLOW_COLOR))
+	{
+		returnValue = 3;
+	}
+
+	// Explosion --- DONE
+	else if (IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
+	{
+		returnValue = 4;
+	}
+
+	// Shield --- DONE
+	else if (IsHoldingColor(BLUE_COLOR))
+	{
+		returnValue = 5;
+	}
+
+	// Bullet spread --- DONE
+	else if (IsHoldingColor(RED_COLOR))
+	{
+		returnValue = 6;
+	}
+
+	// Speed --- DONE
+	else if (IsHoldingColor(YELLOW_COLOR))
+	{
+		returnValue = 7;
+	}
+
 	return returnValue;
 }

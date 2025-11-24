@@ -529,6 +529,38 @@ int main()
 
             DrawCooldown(ability);
 
+            if (ability.holdingColors.size() == 3)
+            {
+                switch (ability.CanUse())
+                {
+                case 0:
+                    break;
+                case 1:
+                    DrawText("Smite", 1050, 940, 30, WHITE);
+                    break;
+                case 2:
+                    DrawText("Bullet speed", 950, 940, 30, WHITE);
+                    break;
+                case 3:
+                    DrawText("Enemy slow", 1000, 940, 30, WHITE);
+                    break;
+                case 4:
+                    DrawText("Explosion", 1000, 940, 30, WHITE);
+                    break;
+                case 5:
+                    DrawText("Shield", 1050, 940, 30, WHITE);
+                    break;
+                case 6:
+                    DrawText("Bullet spread", 950, 940, 30, WHITE);
+                    break;
+                case 7:
+                    DrawText("Speed", 1050, 940, 30, WHITE);
+                    break;
+                default:
+                    break;
+                }
+            }
+
             EndDrawing();
 
             break;

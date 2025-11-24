@@ -20,4 +20,6 @@ public:
 	bool IsHoldingColor(ColorDimension color);
 
 	int Use();
+
+	int CanUse();
 };
