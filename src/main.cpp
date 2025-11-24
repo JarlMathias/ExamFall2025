@@ -10,13 +10,13 @@
 #include "Ability/Ability.h"
 #include "Level/Level.h"
 
-// Set global variables for Score and Gamestate
-int score = 0;
+// Set global variables Gamestate
 
 enum Gamestate {
     PLAYING,
     DEATHSCREEN,
-    VICTORY
+    VICTORY,
+    PAUSED
 };
 
 std::vector<Level> levels;
@@ -173,7 +173,7 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
 }
 
 // Function to draw several HUD elements
-void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors, int halfScreenWidth, int halfScreenHeight, int levelProgress, int currentLevel, int currentWave)
+void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors, int halfScreenWidth, int halfScreenHeight, int levelProgress, int currentLevel, int currentWave, float gameTime)
 {
     Color blue = { BLUE.r, BLUE.g, BLUE.b, 50 };
     Color red = { RED.r, RED.g, RED.b, 50 };
@@ -249,7 +249,7 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
     }
 
     // Displays the time
-    DrawText(TextFormat("Time: %.1f", GetTime()), 1100, 50, 30, WHITE);
+    DrawText(TextFormat("Time: %.1f", gameTime), 1100, 50, 30, WHITE);
 
     // Displays the currently held "colors" for the ability
     for (int i = 0; i < 3; i++)
@@ -287,6 +287,8 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
 
     DrawText(TextFormat("Level %i", currentLevel), (halfScreenWidth / 2) + 5, 10, 20, WHITE);
     DrawText(TextFormat("Wave %i", currentWave), ((halfScreenWidth / 2) + halfScreenWidth) - 70, 10, 20, WHITE);
+
+    DrawText("Press P to pause", 50, 950, 30, WHITE);
 }
 
 // Draws the Cooldown circle
@@ -333,12 +335,13 @@ int main()
     float waveProgressSize = 0;
     float enemyProgressSize = 0;
     float levelProgress = 0;
-    float time;
+    float gameTime = 0.0;
+    float lastFrame = 0.0;
 
     ColorDimension worldColor = BLUE_COLOR;
     int colorSwapCD = 0;
     int maxSwapCD = 30;
-    enum Gamestate gamestate = PLAYING;
+    enum Gamestate gamestate = PAUSED;
 
     Player player;
     player.position = { halfScreenWidth, halfScreenHeight };
@@ -350,8 +353,9 @@ int main()
     bool spreadEnabled{ false };
     int spreadCount = 5;
     float spreadAngle = 15 * DEG2RAD;
+    bool autoShoot = false;
     int shootCD = 0;
-    int maxShootCD = 20;
+    int maxShootCD = 25;
     bool machineGun = false;
     int machineGunCD = 0;
     int maxMachineGunCD = 5;
@@ -393,6 +397,10 @@ int main()
     // Main Game Loop
     while (!WindowShouldClose())
     {
+        float now = GetTime();
+        float delta = now - lastFrame;
+        lastFrame = now;
+
         switch (gamestate)
         {
         case PLAYING:
@@ -400,8 +408,10 @@ int main()
             aimDirection = player.AimDirection();
             player.Move();
 
+            gameTime += delta;
+
             // Function for shooting
-            if ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && shootCD == 0) || (machineGun && machineGunCD == 0))
+            if ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && shootCD == 0) || (autoShoot && shootCD == 0) ||(machineGun && machineGunCD == 0))
             {
                 Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
                 Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
@@ -441,6 +451,11 @@ int main()
             if (machineGunCD != 0)
             {
                 machineGunCD -= 1;
+            }
+
+            if (IsKeyPressed(KEY_C))
+            {
+                autoShoot = !autoShoot;
             }
 
             // Changes the current Color Dimension / shootable enemies
@@ -582,7 +597,6 @@ int main()
                     else
                     {
                         gamestate = VICTORY;
-                        time = GetTime();
                     }
                 }
                 else
@@ -622,9 +636,13 @@ int main()
                         
                         e.isAlive = false;
                         b.isAlive = false;
-                        score += 1;
                     }
                 }
+            }
+
+            if (IsKeyPressed(KEY_P))
+            {
+                gamestate = PAUSED;
             }
 
             // Draw
@@ -661,7 +679,7 @@ int main()
             enemyProgressSize = waveProgressSize / (float)levels[currentLevel].enemyWaves[currentWave];
             levelProgress = (enemyProgressSize * (float)(levels[currentLevel].enemyWaves[currentWave] - enemies.size())) + (waveProgressSize * currentWave);
 
-            DrawHud(worldColor, ability.holdingColors, halfScreenWidth, halfScreenHeight, levelProgress, currentLevel, currentWave);
+            DrawHud(worldColor, ability.holdingColors, halfScreenWidth, halfScreenHeight, levelProgress, currentLevel, currentWave, gameTime);
 
             DrawCooldown(ability);
 
@@ -703,27 +721,134 @@ int main()
 
         // Deathscreen when getting hit
         case DEATHSCREEN:
+        {
             BeginDrawing();
             ClearBackground({ 10, 10, 10, 255 });
 
-            DrawText("You Lost!", 400, 200, 100, WHITE);
-            DrawText(TextFormat("Level: %i", currentLevel), 400, 400, 100, WHITE);
-            DrawText(TextFormat("Wave: %i", currentWave), 400, 600, 100, WHITE);
+            int panelWidth = 600;
+            int panelHeight = 450;
+            int panelX = (1280 - panelWidth) / 2;
+            int panelY = (1024 - panelHeight) / 2;
+            int centerX = 1280 / 2;
+
+            DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.5f));
+            DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, WHITE);
+
+            int titleFont = 100;
+            int infoFont = 60;
+
+            DrawText("You Lost!",
+                centerX - MeasureText("You Lost!", titleFont) / 2,
+                panelY + 40,
+                titleFont,
+                WHITE);
+
+            DrawText(TextFormat("Level: %i", currentLevel),
+                centerX - MeasureText(TextFormat("Level: %i", currentLevel), infoFont) / 2,
+                panelY + 200,
+                infoFont,
+                WHITE);
+
+            DrawText(TextFormat("Wave: %i", currentWave),
+                centerX - MeasureText(TextFormat("Wave: %i", currentWave), infoFont) / 2,
+                panelY + 290,
+                infoFont,
+                WHITE);
 
             EndDrawing();
-            break;
+        }
+        break;
 
         case VICTORY:
+        {
             BeginDrawing();
             ClearBackground({ 10, 10, 10, 255 });
 
-            DrawText("You Won!", 400, 400, 100, WHITE);
-            DrawText(TextFormat("Time: %.2f", time), 400, 600, 100, WHITE);
+            int panelWidth = 600;
+            int panelHeight = 400;
+            int panelX = (1280 - panelWidth) / 2;
+            int panelY = (1024 - panelHeight) / 2;
+            int centerX = 1280 / 2;
+
+            DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.5f));
+            DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, WHITE);
+
+            int titleFont = 100;
+            int infoFont = 60;
+
+            DrawText("You Won!",
+                centerX - MeasureText("You Won!", titleFont) / 2,
+                panelY + 40,
+                titleFont,
+                WHITE);
+
+            DrawText(TextFormat("Time: %.2f", gameTime),
+                centerX - MeasureText(TextFormat("Time: %.2f", gameTime), infoFont) / 2,
+                panelY + 200,
+                infoFont,
+                WHITE);
 
             EndDrawing();
-            break;
         }
+        break;
 
+        case PAUSED:
+            if (IsKeyPressed(KEY_P))
+            {
+                gamestate = PLAYING;
+            }
+            
+            BeginDrawing();
+            ClearBackground({ 10, 10, 10, 255 });
+
+            // --- Menu background panel ---
+            int panelWidth = 600;
+            int panelHeight = 500;
+            int panelX = (1280 - panelWidth) / 2;
+            int panelY = (1024 - panelHeight) / 2;
+
+            DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.5f));
+            DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, WHITE);
+
+            // --- Text content ---
+            const int titleFont = 80;
+            const int optionFont = 40;
+
+            int centerX = 1280 / 2;
+
+            DrawText("Game Paused",
+                centerX - MeasureText("Game Paused", titleFont) / 2,
+                panelY + 40,
+                titleFont,
+                WHITE);
+
+            DrawText("Press P to play",
+                centerX - MeasureText("Press P to play", optionFont) / 2,
+                panelY + 160,
+                optionFont,
+                WHITE);
+
+            DrawText("Press E to use abilities",
+                centerX - MeasureText("Press E to use abilities", optionFont) / 2,
+                panelY + 220,
+                optionFont,
+                WHITE);
+
+            DrawText("Press C to auto fire",
+                centerX - MeasureText("Press C to auto fire", optionFont) / 2,
+                panelY + 280,
+                optionFont,
+                WHITE);
+
+            DrawText(TextFormat("Game Time: %.2f", gameTime),
+                centerX - MeasureText(TextFormat("Game Time: %.2f", gameTime), optionFont) / 2,
+                panelY + 360,
+                optionFont,
+                WHITE);
+
+            EndDrawing();
+
+        }
     }
 
     CloseWindow();
