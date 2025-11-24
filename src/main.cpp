@@ -65,7 +65,7 @@ std::vector<Enemy> spawnEnemies(int screenWidth, int screenHeight, Vector2d inTa
 }
 
 // Function to draw several HUD elements
-void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors)
+void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColors, int halfScreenWidth, int halfScreenHeight, int levelProgress, int currentLevel, int currentWave)
 {
     Color blue = { BLUE.r, BLUE.g, BLUE.b, 50 };
     Color red = { RED.r, RED.g, RED.b, 50 };
@@ -173,6 +173,12 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
 
         DrawCircle(1200, 950 - (i * 75), 20.f, color);
     }
+    
+    DrawRectangle(halfScreenWidth / 2, 40, halfScreenWidth, 30, WHITE);
+    DrawRectangle((halfScreenWidth / 2) + 5, 45, (int)levelProgress, 20, GREEN);
+
+    DrawText(TextFormat("Level %i", currentLevel), (halfScreenWidth / 2) + 5, 10, 20, WHITE);
+    DrawText(TextFormat("Wave %i", currentWave), ((halfScreenWidth / 2) + halfScreenWidth) - 70, 10, 20, WHITE);
 }
 
 // Draws the Cooldown circle
@@ -215,6 +221,10 @@ int main()
     InitLevels();
     int currentLevel = 0;
     int currentWave = 0;
+    int totalWaves = 0;
+    float waveProgressSize = 0;
+    float enemyProgressSize = 0;
+    float levelProgress = 0;
 
     ColorDimension worldColor = BLUE_COLOR;
     int colorSwapCD = 0;
@@ -259,6 +269,11 @@ int main()
             }
             enemies = spawnEnemies(screenWidth, screenHeight, player.position, enemies, levels[currentLevel].enemyList[spawnedEnemies + i]);
         }
+    }
+
+    for (int num : levels[currentLevel].enemyWaves)
+    {
+        totalWaves += 1;
     }
 
     // Main Game Loop
@@ -418,10 +433,7 @@ int main()
                 }
             }
 
-            enemies.erase(
-                std::remove_if(enemies.begin(), enemies.end(),
-                    [](const Enemy& e) { return !e.isAlive; }),
-                enemies.end());
+            enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& e) { return !e.isAlive; }), enemies.end());
 
             if (enemies.size() == 0)
             {
@@ -430,6 +442,12 @@ int main()
                     currentLevel += 1;
                     currentWave = 0;
                     std::cout << "level increased" << std::endl;
+
+                    totalWaves = 0;
+                    for (int num : levels[currentLevel].enemyWaves)
+                    {
+                        totalWaves += 1;
+                    }
                 }
                 else
                 {
@@ -502,7 +520,12 @@ int main()
                 DrawRectangle(player.position.x - player.size, player.position.y - (player.size + 20), ((float)colorSwapCD / (float)maxSwapCD) * (float)player.size * 2.0f, 10, LIME);
             }
 
-            DrawHud(worldColor, ability.holdingColors);
+            // Math for progress bar
+            waveProgressSize = (float)(halfScreenWidth - 10) / (float)totalWaves;
+            enemyProgressSize = waveProgressSize / (float)levels[currentLevel].enemyWaves[currentWave];
+            levelProgress = (enemyProgressSize * (float)(levels[currentLevel].enemyWaves[currentWave] - enemies.size())) + (waveProgressSize * currentWave);
+
+            DrawHud(worldColor, ability.holdingColors, halfScreenWidth, halfScreenHeight, levelProgress, currentLevel, currentWave);
 
             DrawCooldown(ability);
 
