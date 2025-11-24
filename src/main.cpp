@@ -15,41 +15,149 @@ int score = 0;
 
 enum Gamestate {
     PLAYING,
-    DEATHSCREEN
+    DEATHSCREEN,
+    VICTORY
 };
 
 std::vector<Level> levels;
 
 void InitLevels()
 {
-    int n = 2; // number of levels
+    int n = 10; // number of levels
 
     for (int i = 0; i < n; ++i) {
         levels.emplace_back();
     }
     
-    // Add enemies for level 0
-    std::vector<int> level0Waves{ 3, 5, 3 ,1 };
-    std::vector<ColorDimension> level0Enemies
+    // ================= LEVEL 0  =================
     {
-        BLUE_COLOR, RED_COLOR, RED_COLOR,
-        YELLOW_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, YELLOW_COLOR,
-        BLUE_COLOR, BLUE_COLOR, BLUE_COLOR,
-        RED_COLOR
-    };
-    levels[0].AddEnemies(level0Enemies);
-    levels[0].AddWaves(level0Waves);
+        std::vector<int> level0Waves{ 3, 3 };
+        std::vector<ColorDimension> level0Enemies
+        {
+            BLUE_COLOR, BLUE_COLOR, BLUE_COLOR,      // 3
+            YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR       // 3
+        };
+        levels[0].AddEnemies(level0Enemies);
+        levels[0].AddWaves(level0Waves);
+    }
 
-    // Add enemies for level 1
-    std::vector<int> level1Waves{ 3, 2, 6 };
-    std::vector<ColorDimension> level1Enemies
+    // ================= LEVEL 1 =================
     {
-        BLUE_COLOR, RED_COLOR, YELLOW_COLOR,
-        YELLOW_COLOR, YELLOW_COLOR,
-        BLUE_COLOR, BLUE_COLOR, RED_COLOR, RED_COLOR, YELLOW_COLOR, YELLOW_COLOR
-    };
-    levels[1].AddEnemies(level1Enemies);
-    levels[1].AddWaves(level1Waves);
+        std::vector<int> level1Waves{ 4, 4, 2 };
+        std::vector<ColorDimension> level1Enemies
+        {
+            BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR,     // 4
+            YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR,     // 4
+            BLUE_COLOR, YELLOW_COLOR                                // 2
+        };
+        levels[1].AddEnemies(level1Enemies);
+        levels[1].AddWaves(level1Waves);
+    }
+
+    // ================= LEVEL 2 =================
+    {
+        std::vector<int> level2Waves{ 5, 3 };
+        std::vector<ColorDimension> level2Enemies
+        {
+            RED_COLOR, RED_COLOR, RED_COLOR, BLUE_COLOR, RED_COLOR,   // 5
+            RED_COLOR, RED_COLOR, BLUE_COLOR                          // 3
+        };
+        levels[2].AddEnemies(level2Enemies);
+        levels[2].AddWaves(level2Waves);
+    }
+
+    // ================= LEVEL 3 =================
+    {
+        std::vector<int> level3Waves{ 4, 6, 4 };
+        std::vector<ColorDimension> level3Enemies
+        {
+            RED_COLOR, YELLOW_COLOR, RED_COLOR, YELLOW_COLOR,         // 4
+            YELLOW_COLOR, RED_COLOR, RED_COLOR, YELLOW_COLOR, YELLOW_COLOR, RED_COLOR, // 6
+            RED_COLOR, YELLOW_COLOR, RED_COLOR, YELLOW_COLOR          // 4
+        };
+        levels[3].AddEnemies(level3Enemies);
+        levels[3].AddWaves(level3Waves);
+    }
+
+    // ================= LEVEL 4 =================
+    {
+        std::vector<int> level4Waves{ 6, 5 };
+        std::vector<ColorDimension> level4Enemies
+        {
+            BLUE_COLOR, RED_COLOR, BLUE_COLOR, BLUE_COLOR, RED_COLOR, RED_COLOR, // 6
+            RED_COLOR, BLUE_COLOR, RED_COLOR, BLUE_COLOR, RED_COLOR              // 5
+        };
+        levels[4].AddEnemies(level4Enemies);
+        levels[4].AddWaves(level4Waves);
+    }
+
+    // ================= LEVEL 5 =================
+    {
+        std::vector<int> level5Waves{ 4, 7 };
+        std::vector<ColorDimension> level5Enemies
+        {
+            BLUE_COLOR, BLUE_COLOR, YELLOW_COLOR, RED_COLOR,                     // 4
+            RED_COLOR, BLUE_COLOR, RED_COLOR, YELLOW_COLOR, RED_COLOR, BLUE_COLOR, YELLOW_COLOR // 7
+        };
+        levels[5].AddEnemies(level5Enemies);
+        levels[5].AddWaves(level5Waves);
+    }
+
+    // ================= LEVEL 6 =================
+    {
+        std::vector<int> level6Waves{ 6, 6, 4 };
+        std::vector<ColorDimension> level6Enemies
+        {
+            YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR,
+            YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR,
+            YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR
+        };
+        levels[6].AddEnemies(level6Enemies);
+        levels[6].AddWaves(level6Waves);
+    }
+
+    // ================= LEVEL 7 =================
+    {
+        std::vector<int> level7Waves{ 7, 5, 7 };
+        std::vector<ColorDimension> level7Enemies
+        {
+            BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, BLUE_COLOR, YELLOW_COLOR, YELLOW_COLOR, BLUE_COLOR,   // 7
+            YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR,                           // 5
+            BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR    // 7
+        };
+        levels[7].AddEnemies(level7Enemies);
+        levels[7].AddWaves(level7Waves);
+    }
+
+    // ================= LEVEL 8 =================
+    {
+        std::vector<int> level8Waves{ 8, 6 };
+        std::vector<ColorDimension> level8Enemies
+        {
+            RED_COLOR, RED_COLOR, BLUE_COLOR, RED_COLOR, YELLOW_COLOR, RED_COLOR, RED_COLOR, BLUE_COLOR, // 8
+            RED_COLOR, RED_COLOR, RED_COLOR, YELLOW_COLOR, RED_COLOR, RED_COLOR                           // 6
+        };
+        levels[8].AddEnemies(level8Enemies);
+        levels[8].AddWaves(level8Waves);
+    }
+
+    // ================= LEVEL 9 =================
+    {
+        std::vector<int> level9Waves{ 10, 8, 10 };
+        std::vector<ColorDimension> level9Enemies
+        {
+            RED_COLOR, RED_COLOR, RED_COLOR, BLUE_COLOR, YELLOW_COLOR,
+            RED_COLOR, RED_COLOR, BLUE_COLOR, RED_COLOR, YELLOW_COLOR,
+
+            BLUE_COLOR, BLUE_COLOR, RED_COLOR, YELLOW_COLOR,
+            BLUE_COLOR, YELLOW_COLOR, BLUE_COLOR, RED_COLOR,
+
+            YELLOW_COLOR, RED_COLOR, BLUE_COLOR, RED_COLOR, YELLOW_COLOR,
+            RED_COLOR, YELLOW_COLOR, BLUE_COLOR, RED_COLOR, BLUE_COLOR
+        };
+        levels[9].AddEnemies(level9Enemies);
+        levels[9].AddWaves(level9Waves);
+    }
 }
 
 // Function to spawn enemies at random location and add them to the vector
@@ -140,8 +248,8 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
         previousVector = p;
     }
 
-    // Displays the score
-    DrawText(TextFormat("Score: %i", score), 1100, 50, 30, WHITE);
+    // Displays the time
+    DrawText(TextFormat("Time: %.1f", GetTime()), 1100, 50, 30, WHITE);
 
     // Displays the currently held "colors" for the ability
     for (int i = 0; i < 3; i++)
@@ -225,6 +333,7 @@ int main()
     float waveProgressSize = 0;
     float enemyProgressSize = 0;
     float levelProgress = 0;
+    float time;
 
     ColorDimension worldColor = BLUE_COLOR;
     int colorSwapCD = 0;
@@ -241,6 +350,11 @@ int main()
     bool spreadEnabled{ false };
     int spreadCount = 5;
     float spreadAngle = 15 * DEG2RAD;
+    int shootCD = 0;
+    int maxShootCD = 20;
+    bool machineGun = false;
+    int machineGunCD = 0;
+    int maxMachineGunCD = 5;
 
     std::vector<Enemy> enemies;
 
@@ -287,7 +401,7 @@ int main()
             player.Move();
 
             // Function for shooting
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            if ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && shootCD == 0) || (machineGun && machineGunCD == 0))
             {
                 Vector2d mousePos = { (float)GetMouseX(), (float)GetMouseY() };
                 Vector2d dir = player.position.VectorTowardsTarget(mousePos).NormalizeVector();
@@ -314,6 +428,19 @@ int main()
                     b.Shoot(player.position, dir, bulletSpeed);
                     bullets.push_back(b);
                 }
+
+                shootCD = maxShootCD;
+                machineGunCD = maxMachineGunCD;
+            }
+
+            if (shootCD != 0)
+            {
+                shootCD -= 1;
+            }
+
+            if (machineGunCD != 0)
+            {
+                machineGunCD -= 1;
             }
 
             // Changes the current Color Dimension / shootable enemies
@@ -335,7 +462,7 @@ int main()
                     case 0:
                         break;
                     case 1:
-                        enemies.clear();
+                        machineGun = true;
                         break;
                     case 2:
                         bulletSpeed *= 2;
@@ -380,6 +507,7 @@ int main()
                 case 0:
                     break;
                 case 1:
+                    machineGun = false;
                     break;
                 case 2:
                     bulletSpeed /= 2;
@@ -439,14 +567,22 @@ int main()
             {
                 if (currentWave + 1 == levels[currentLevel].enemyWaves.size())
                 {
-                    currentLevel += 1;
-                    currentWave = 0;
-                    std::cout << "level increased" << std::endl;
-
-                    totalWaves = 0;
-                    for (int num : levels[currentLevel].enemyWaves)
+                    if (levels.size() > currentLevel + 1)
                     {
-                        totalWaves += 1;
+                        currentLevel += 1;
+                        currentWave = 0;
+                        std::cout << "level increased" << std::endl;
+
+                        totalWaves = 0;
+                        for (int num : levels[currentLevel].enemyWaves)
+                        {
+                            totalWaves += 1;
+                        }
+                    }
+                    else
+                    {
+                        gamestate = VICTORY;
+                        time = GetTime();
                     }
                 }
                 else
@@ -536,7 +672,7 @@ int main()
                 case 0:
                     break;
                 case 1:
-                    DrawText("Smite", 1050, 940, 30, WHITE);
+                    DrawText("Machine Gun", 950, 940, 30, WHITE);
                     break;
                 case 2:
                     DrawText("Bullet speed", 950, 940, 30, WHITE);
@@ -570,12 +706,24 @@ int main()
             BeginDrawing();
             ClearBackground({ 10, 10, 10, 255 });
 
-            DrawText("You Lost!", 400, 400, 100, WHITE);
-            DrawText(TextFormat("Score: %i", score), 400, 600, 100, WHITE);
+            DrawText("You Lost!", 400, 200, 100, WHITE);
+            DrawText(TextFormat("Level: %i", currentLevel), 400, 400, 100, WHITE);
+            DrawText(TextFormat("Wave: %i", currentWave), 400, 600, 100, WHITE);
+
+            EndDrawing();
+            break;
+
+        case VICTORY:
+            BeginDrawing();
+            ClearBackground({ 10, 10, 10, 255 });
+
+            DrawText("You Won!", 400, 400, 100, WHITE);
+            DrawText(TextFormat("Time: %.2f", time), 400, 600, 100, WHITE);
 
             EndDrawing();
             break;
         }
+
     }
 
     CloseWindow();

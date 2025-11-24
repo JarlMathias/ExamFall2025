@@ -32,7 +32,7 @@ int Ability::Use()
 {	
 	int returnValue = 0;
 
-	// Smite --- DONE?
+	// Machine Gun --- DONE?
 	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using ALL" << std::endl;
@@ -98,7 +98,7 @@ int Ability::CanUse()
 {
 	int returnValue = 0;
 
-	// Smite --- DONE?
+	// Machine Gun --- DONE?
 	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		returnValue = 1;
