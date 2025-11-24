@@ -21,6 +21,11 @@ enum Gamestate {
 
 std::vector<Level> levels;
 
+Sound shootSound;
+Sound enemyDeathSound;
+Sound explosionSound;
+Music music;
+
 void InitLevels()
 {
     int n = 10; // number of levels
@@ -35,7 +40,7 @@ void InitLevels()
         std::vector<ColorDimension> level0Enemies
         {
             BLUE_COLOR, BLUE_COLOR, BLUE_COLOR,      // 3
-            YELLOW_COLOR, YELLOW_COLOR, YELLOW_COLOR       // 3
+            YELLOW_COLOR, RED_COLOR, YELLOW_COLOR       // 3
         };
         levels[0].AddEnemies(level0Enemies);
         levels[0].AddWaves(level0Waves);
@@ -370,7 +375,20 @@ int main()
 
     // Setup
     InitWindow(screenWidth, screenHeight, "ExamFall2025");
+    InitAudioDevice();
     SetTargetFPS(60);
+
+    shootSound = LoadSound("resources/shoot.wav");
+    enemyDeathSound = LoadSound("resources/enemyDeathSound.wav");
+    explosionSound = LoadSound("resources/explosion.wav");
+    music = LoadMusicStream("resources/music.mp3");
+
+    SetSoundVolume(shootSound, 0.1f);
+    SetSoundVolume(enemyDeathSound, 0.02f);
+    SetSoundVolume(explosionSound, 1.0f);
+    SetMusicVolume(music, 0.1f);
+
+    PlayMusicStream(music);
 
     for (int i = 0; i < levels[currentLevel].enemyWaves[currentWave]; i++)
     {
@@ -400,6 +418,8 @@ int main()
         float now = GetTime();
         float delta = now - lastFrame;
         lastFrame = now;
+
+        UpdateMusicStream(music);
 
         switch (gamestate)
         {
@@ -441,6 +461,8 @@ int main()
 
                 shootCD = maxShootCD;
                 machineGunCD = maxMachineGunCD;
+
+                PlaySound(shootSound);
             }
 
             if (shootCD != 0)
@@ -489,6 +511,7 @@ int main()
                         break;
                     case 4:
                         drawExplosion = true;
+                        PlaySound(explosionSound);
                         enemies.erase(
                             std::remove_if(enemies.begin(), enemies.end(),
                                 [&](const Enemy& e) {
@@ -636,6 +659,8 @@ int main()
                         
                         e.isAlive = false;
                         b.isAlive = false;
+
+                        PlaySound(enemyDeathSound);
                     }
                 }
             }
@@ -851,6 +876,10 @@ int main()
         }
     }
 
+    UnloadSound(shootSound);
+    UnloadSound(enemyDeathSound);
+    UnloadMusicStream(music);
+    CloseAudioDevice();
     CloseWindow();
     return 0;
 }
