@@ -63,15 +63,6 @@ Vector2d Vector2d::NormalizeVector()
     return normalizedVector;
 }
 
-// Returns cosine movement of a vector using amplitude and angle
-Vector2d Vector2d::CosineMovement(Vector2d inCenter, float inAmplitude, float inAngle)
-{
-    float x = inCenter.x + inAmplitude * cosf(inAngle);
-    float y = inCenter.y;
-
-    return { x, y };
-}
-
 // Returns the circular motion of a vector using radius and angle
 Vector2d Vector2d::CircularMotion(Vector2d inCenter, float inRadius, float inAngle)
 {
