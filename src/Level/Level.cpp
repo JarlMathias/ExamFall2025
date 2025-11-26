@@ -1,5 +1,6 @@
 #include "Level.h"
 
+// Adds enemies to the level
 void Level::AddEnemies(std::vector<ColorDimension> colors)
 {
 	for (int i = 0; i < colors.size(); i++)
@@ -8,6 +9,7 @@ void Level::AddEnemies(std::vector<ColorDimension> colors)
 	}
 }
 
+// Adds waves to the level
 void Level::AddWaves(std::vector<int> waves)
 {
 	for (int i = 0; i < waves.size(); i++)

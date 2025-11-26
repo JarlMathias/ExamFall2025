@@ -43,28 +43,24 @@ void Enemy::Draw(ColorDimension worldColor, Vector2d playerPos)
         case BLUE_COLOR:
             if (worldColor == color)
             {
-                // Independent scale for the triangle to match circle size
                 float triangleScale = 2.0f;
 
                 float halfWidth = (size * triangleScale) * 0.5f;
                 float height = (size * triangleScale) * sqrtf(3) / 2.0f;
 
-                // Define triangle in local space
                 Vector2d tip = { 0, -height / 2.0f };
                 Vector2d left = { -halfWidth, height / 2.0f };
                 Vector2d right = { halfWidth, height / 2.0f };
 
-                // Compute direction toward the player
                 Vector2d dir = playerPos.VectorTowardsTarget(position).NormalizeVector();
-                float angle = atan2f(dir.y, dir.x) + (PI / 2.0f) + PI;  // tip faces player
+                float angle = atan2f(dir.y, dir.x) + (PI / 2.0f) + PI;
 
-                // Rotate and translate vertices
                 Vector2d rotatedTip = tip.Rotate(angle).SetVectorOffset(position);
                 Vector2d rotatedLeft = left.Rotate(angle).SetVectorOffset(position);
                 Vector2d rotatedRight = right.Rotate(angle).SetVectorOffset(position);
 
-                // Draw the triangle
-                DrawTriangle(
+                DrawTriangle
+                (
                     { rotatedTip.x, rotatedTip.y },
                     { rotatedLeft.x, rotatedLeft.y },
                     { rotatedRight.x, rotatedRight.y },
@@ -73,28 +69,24 @@ void Enemy::Draw(ColorDimension worldColor, Vector2d playerPos)
             }
             else
             {
-                // Independent scale for the triangle to match circle size
                 float triangleScale = 2.0f;
 
                 float halfWidth = (size * triangleScale) * 0.5f;
                 float height = (size * triangleScale) * sqrtf(3) / 2.0f;
 
-                // Define triangle in local space
                 Vector2d tip = { 0, -height / 2.0f };
                 Vector2d left = { -halfWidth, height / 2.0f };
                 Vector2d right = { halfWidth, height / 2.0f };
 
-                // Compute direction toward the player
                 Vector2d dir = playerPos.VectorTowardsTarget(position).NormalizeVector();
-                float angle = atan2f(dir.y, dir.x) + (PI / 2.0f) + PI;  // tip faces player
+                float angle = atan2f(dir.y, dir.x) + (PI / 2.0f) + PI;
 
-                // Rotate and translate vertices
                 Vector2d rotatedTip = tip.Rotate(angle).SetVectorOffset(position);
                 Vector2d rotatedLeft = left.Rotate(angle).SetVectorOffset(position);
                 Vector2d rotatedRight = right.Rotate(angle).SetVectorOffset(position);
 
-                // Draw the triangle
-                DrawTriangle(
+                DrawTriangle
+                (
                     { rotatedTip.x, rotatedTip.y },
                     { rotatedLeft.x, rotatedLeft.y },
                     { rotatedRight.x, rotatedRight.y },
@@ -105,42 +97,32 @@ void Enemy::Draw(ColorDimension worldColor, Vector2d playerPos)
         case RED_COLOR:
             if (worldColor == color)
             {
-                // Calculate vector from rectangle to player
                 Vector2d direction = playerPos.VectorTowardsTarget(position);
-                // Calculate angle using atan2
                 float angle = atan2f(direction.y, direction.x) * (180.0f / PI);
 
-                // Define the rectangle
                 Rectangle rect;
                 rect.x = position.x;
                 rect.y = position.y;
                 rect.width = size * 2;
                 rect.height = size * 2;
 
-                // Set origin to center for proper rotation
                 Vector2 origin = { size, size };
 
-                // Draw rectangle in red, rotated towards player
                 DrawRectanglePro(rect, origin, angle, RED);
             }
             else
             {
-                // Calculate vector from rectangle to player
                 Vector2d direction = playerPos.VectorTowardsTarget(position);
-                // Calculate angle using atan2
                 float angle = atan2f(direction.y, direction.x) * (180.0f / PI);
 
-                // Define the rectangle
                 Rectangle rect;
                 rect.x = position.x;
                 rect.y = position.y;
                 rect.width = size * 2;
                 rect.height = size * 2;
 
-                // Set origin to center for proper rotation
                 Vector2 origin = { size, size };
 
-                // Draw rectangle in red, rotated towards player
                 DrawRectanglePro(rect, origin, angle, { RED.r, RED.g, RED.b, 50 });
             }
             break;

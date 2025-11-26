@@ -11,7 +11,6 @@
 #include "Level/Level.h"
 
 // Set global variables Gamestate
-
 enum Gamestate {
     PLAYING,
     DEATHSCREEN,
@@ -21,11 +20,13 @@ enum Gamestate {
 
 std::vector<Level> levels;
 
+// Sound variables
 Sound shootSound;
 Sound enemyDeathSound;
 Sound explosionSound;
 Music music;
 
+// The level data
 void InitLevels()
 {
     int n = 10; // number of levels
@@ -287,9 +288,11 @@ void DrawHud(ColorDimension worldColor, std::vector<ColorDimension> holdingColor
         DrawCircle(1200, 950 - (i * 75), 20.f, color);
     }
     
+    // Displays a progressbar for the progress in the current level
     DrawRectangle(halfScreenWidth / 2, 40, halfScreenWidth, 30, WHITE);
     DrawRectangle((halfScreenWidth / 2) + 5, 45, (int)levelProgress, 20, GREEN);
 
+    // Displays which level and wave the player is on
     DrawText(TextFormat("Level %i", currentLevel), (halfScreenWidth / 2) + 5, 10, 20, WHITE);
     DrawText(TextFormat("Wave %i", currentWave), ((halfScreenWidth / 2) + halfScreenWidth) - 70, 10, 20, WHITE);
 
@@ -378,6 +381,7 @@ int main()
     InitAudioDevice();
     SetTargetFPS(60);
 
+    // Sound setup
     shootSound = LoadSound("resources/shoot.wav");
     enemyDeathSound = LoadSound("resources/enemyDeathSound.wav");
     explosionSound = LoadSound("resources/explosion.wav");
@@ -390,6 +394,7 @@ int main()
 
     PlayMusicStream(music);
 
+    // Spawns the initial enemies for the first level and wave
     for (int i = 0; i < levels[currentLevel].enemyWaves[currentWave]; i++)
     {
         if (currentWave == 0)
@@ -601,6 +606,7 @@ int main()
 
             enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& e) { return !e.isAlive; }), enemies.end());
 
+            // Updates level and wave progression
             if (enemies.size() == 0)
             {
                 if (currentWave + 1 == levels[currentLevel].enemyWaves.size())
@@ -665,6 +671,7 @@ int main()
                 }
             }
 
+            // Pauses the game
             if (IsKeyPressed(KEY_P))
             {
                 gamestate = PAUSED;
@@ -708,6 +715,7 @@ int main()
 
             DrawCooldown(ability);
 
+            // Displays what ability the player can use
             if (ability.holdingColors.size() == 3)
             {
                 switch (ability.CanUse())
@@ -784,6 +792,7 @@ int main()
         }
         break;
 
+        // Screen that displays after winning the game (clearing level 10)
         case VICTORY:
         {
             BeginDrawing();
@@ -817,6 +826,7 @@ int main()
         }
         break;
 
+        // Pause screen when starting the screen or pressing P
         case PAUSED:
             if (IsKeyPressed(KEY_P))
             {

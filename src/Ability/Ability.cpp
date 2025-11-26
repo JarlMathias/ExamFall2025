@@ -32,49 +32,49 @@ int Ability::Use()
 {	
 	int returnValue = 0;
 
-	// Machine Gun --- DONE?
+	// Machine Gun
 	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using ALL" << std::endl;
 		returnValue = 1;
 	}
 
-	// Bullet speed --- DONE
+	// Bullet speed
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR))
 	{
 		std::cout << "Using BLUE and RED" << std::endl;
 		returnValue = 2;
 	}
 
-	// Enemy slow --- DONE
+	// Enemy slow
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using BLUE and YELLOW" << std::endl;
 		returnValue = 3;
 	}
 
-	// Explosion --- DONE
+	// Explosion
 	else if (IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using RED and YELLOW" << std::endl;
 		returnValue = 4;
 	}
 
-	// Shield --- DONE
+	// Shield
 	else if (IsHoldingColor(BLUE_COLOR))
 	{
 		std::cout << "Using BLUE" << std::endl;
 		returnValue = 5;
 	}
 
-	// Bullet spread --- DONE
+	// Bullet spread
 	else if (IsHoldingColor(RED_COLOR))
 	{
 		std::cout << "Using RED" << std::endl;
 		returnValue = 6;
 	}
 
-	// Speed --- DONE
+	// Speed
 	else if (IsHoldingColor(YELLOW_COLOR))
 	{
 		std::cout << "Using YELLOW" << std::endl;
@@ -98,43 +98,43 @@ int Ability::CanUse()
 {
 	int returnValue = 0;
 
-	// Machine Gun --- DONE?
+	// Machine Gun
 	if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		returnValue = 1;
 	}
 
-	// Bullet speed --- DONE
+	// Bullet speed
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(RED_COLOR))
 	{
 		returnValue = 2;
 	}
 
-	// Enemy slow --- DONE
+	// Enemy slow
 	else if (IsHoldingColor(BLUE_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		returnValue = 3;
 	}
 
-	// Explosion --- DONE
+	// Explosion
 	else if (IsHoldingColor(RED_COLOR) && IsHoldingColor(YELLOW_COLOR))
 	{
 		returnValue = 4;
 	}
 
-	// Shield --- DONE
+	// Shield
 	else if (IsHoldingColor(BLUE_COLOR))
 	{
 		returnValue = 5;
 	}
 
-	// Bullet spread --- DONE
+	// Bullet spread
 	else if (IsHoldingColor(RED_COLOR))
 	{
 		returnValue = 6;
 	}
 
-	// Speed --- DONE
+	// Speed
 	else if (IsHoldingColor(YELLOW_COLOR))
 	{
 		returnValue = 7;
