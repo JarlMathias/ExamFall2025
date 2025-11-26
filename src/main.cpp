@@ -826,16 +826,16 @@ int main()
             BeginDrawing();
             ClearBackground({ 10, 10, 10, 255 });
 
-            // --- Menu background panel ---
-            int panelWidth = 600;
-            int panelHeight = 500;
+            // Menu background panel
+            int panelWidth = 800;
+            int panelHeight = 600;
             int panelX = (1280 - panelWidth) / 2;
             int panelY = (1024 - panelHeight) / 2;
 
             DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.5f));
             DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, WHITE);
 
-            // --- Text content ---
+            // Text content
             const int titleFont = 80;
             const int optionFont = 40;
 
@@ -853,26 +853,38 @@ int main()
                 optionFont,
                 WHITE);
 
-            DrawText("Press E to use abilities",
-                centerX - MeasureText("Press E to use abilities", optionFont) / 2,
+            DrawText("Press C to auto fire",
+                centerX - MeasureText("Press C to auto fire", optionFont) / 2,
                 panelY + 220,
                 optionFont,
                 WHITE);
 
-            DrawText("Press C to auto fire",
-                centerX - MeasureText("Press C to auto fire", optionFont) / 2,
-                panelY + 280,
+            DrawText("Shoot enemies to store colors.",
+                centerX - MeasureText("Shoot enemies to store colors.", optionFont) / 2,
+                panelY + 300,
                 optionFont,
                 WHITE);
 
-            DrawText(TextFormat("Game Time: %.2f", gameTime),
-                centerX - MeasureText(TextFormat("Game Time: %.2f", gameTime), optionFont) / 2,
+            DrawText("Press E to consume colors.",
+                centerX - MeasureText("Press E to consume colors.", optionFont) / 2,
                 panelY + 360,
                 optionFont,
                 WHITE);
 
-            EndDrawing();
+            DrawText("Effects depend on consumed colors.",
+                centerX - MeasureText("Effects depend on consumed colors.", optionFont) / 2,
+                panelY + 420,
+                optionFont,
+                WHITE);
 
+            // Game time
+            DrawText(TextFormat("Game Time: %.2f", gameTime),
+                centerX - MeasureText(TextFormat("Game Time: %.2f", gameTime), optionFont) / 2,
+                panelY + 500,
+                optionFont,
+                WHITE);
+
+            EndDrawing();
         }
     }
 
